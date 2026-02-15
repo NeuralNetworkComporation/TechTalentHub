@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Онбординг - Дашборд{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1>Онбординг новых сотрудников</h1>
+    </div>
+    <div class="col-auto">
+        <a href="{% url 'admin:onboarding_onboardingtask_changelist' %}" class="btn btn-outline-primary">
+            Управлять задачами
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    {% if employees %}
+        {% for item in employees %}
+            <div class="col-md-6 col-lg-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ item.employee.name }}</h5>
+                        <p class="card-text">
+                            <small class="text-muted">
+                                {{ item.employee.position|default:"Должность не указана" }}
+                            </small><br>
+                            <small>Дата приема: {{ item.employee.hire_date|date:"d.m.Y"|default:"не указана" }}</small>
+                        </p>
+                        
+                        <div class="progress mb-3" style="height: 20px;">
+                            <div class="progress-bar bg-success" role="progressbar" 
+                                 style="width: {{ item.progress }}%;" 
+                                 aria-valuenow="{{ item.progress }}" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="100">
+                                {{ item.progress }}%
+                            </div>
+                        </div>
+                        
+                        <p class="text-center">
+                            Выполнено {{ item.completed }} из {{ item.total }} задач
+                        </p>
+                        
+                        <a href="{% url 'onboarding:employee_checklist' item.employee.id %}" 
+                           class="btn btn-primary w-100">
+                            Открыть чек-лист
+                        </a>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <div class="col">
+            <div class="alert alert-info">
+                <h4 class="alert-heading">Нет новых сотрудников</h4>
+                <p>За последние 30 дней не было новых сотрудников.</p>
+                <hr>
+                <p class="mb-0">
+                    <a href="{% url 'admin:users_employee_changelist' %}" class="alert-link">
+                        Перейти к списку сотрудников
+                    </a>
+                </p>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

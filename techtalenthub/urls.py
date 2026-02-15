@@ -7,11 +7,10 @@ from django.views.generic import TemplateView
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', TemplateView.as_view(template_name='home.html'), name='home'),
-    
-    # Наши приложения (добавим позже)
-    # path('onboarding/', include('onboarding.urls')),
-    # path('vacations/', include('vacations.urls')),
-    # path('users/', include('users.urls')),
+
+    path('onboarding/', include('onboarding.urls')),
+    #path('vacations/', include('vacations.urls')),
+    #path('users/', include('users.urls')),
 ]
 
 if settings.DEBUG:
