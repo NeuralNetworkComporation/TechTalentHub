@@ -1,0 +1,236 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Аналитика и отчёты{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.css">
+<style>
+    .stat-card {
+        border-radius: 15px;
+        padding: 1.5rem;
+        height: 100%;
+        transition: transform 0.2s;
+    }
+    .stat-card:hover {
+        transform: translateY(-5px);
+    }
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+    }
+    .progress-card {
+        border-radius: 12px;
+        padding: 1rem;
+        margin-bottom: 0.5rem;
+        background: #f8f9fc;
+        transition: all 0.2s;
+    }
+    .progress-card:hover {
+        background: #e8f0fe;
+    }
+    .progress-bar-custom {
+        height: 8px;
+        border-radius: 4px;
+        background: linear-gradient(90deg, #2fc6f6, #1b9fd8);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<!-- Заголовок -->
+<div class="row mb-4">
+    <div class="col">
+        <h1><i class="fas fa-chart-line me-3 text-primary"></i>Аналитика и отчёты</h1>
+        <p class="text-muted">Статистика компании в реальном времени</p>
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-outline-primary" onclick="window.location.reload()">
+            <i class="fas fa-sync-alt me-2"></i>Обновить
+        </button>
+    </div>
+</div>
+
+<!-- Основные показатели -->
+<div class="row g-4 mb-5">
+    <div class="col-md-3">
+        <div class="stat-card bg-primary text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-uppercase mb-2 opacity-75">Всего сотрудников</h6>
+                    <h2 class="display-5 fw-bold mb-0">{{ total_employees }}</h2>
+                    <small class="opacity-75">активных</small>
+                </div>
+                <div class="stat-icon bg-white bg-opacity-25">
+                    <i class="fas fa-users"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card bg-success text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-uppercase mb-2 opacity-75">Новые за месяц</h6>
+                    <h2 class="display-5 fw-bold mb-0">{{ new_employees }}</h2>
+                    <small class="opacity-75">принято</small>
+                </div>
+                <div class="stat-icon bg-white bg-opacity-25">
+                    <i class="fas fa-user-plus"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card bg-warning text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-uppercase mb-2 opacity-75">В отпуске сейчас</h6>
+                    <h2 class="display-5 fw-bold mb-0">{{ on_vacation_now }}</h2>
+                    <small class="opacity-75">человек</small>
+                </div>
+                <div class="stat-icon bg-white bg-opacity-25">
+                    <i class="fas fa-umbrella-beach"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="stat-card bg-info text-white">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h6 class="text-uppercase mb-2 opacity-75">Заявок на отпуск</h6>
+                    <h2 class="display-5 fw-bold mb-0">{{ vacations_stats.pending }}</h2>
+                    <small class="opacity-75">ожидают</small>
+                </div>
+                <div class="stat-icon bg-white bg-opacity-25">
+                    <i class="fas fa-clock"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Графики и статистика -->
+<div class="row g-4 mb-5">
+    <!-- Статусы заявок -->
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-chart-pie me-2 text-primary"></i>Статусы заявок на отпуск</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="vacationsChart" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Быстрые действия -->
+    <div class="col-md-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-bolt me-2 text-warning"></i>Быстрые действия</h5>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-3">
+                    <a href="{% url 'vacations:create' %}" class="btn btn-outline-primary text-start">
+                        <i class="fas fa-plus-circle me-2 text-success"></i>
+                        Создать заявку на отпуск
+                    </a>
+                    <a href="{% url 'onboarding:dashboard' %}" class="btn btn-outline-primary text-start">
+                        <i class="fas fa-tasks me-2 text-info"></i>
+                        Проверить онбординг
+                    </a>
+                    <a href="{% url 'vacations:list' %}" class="btn btn-outline-primary text-start">
+                        <i class="fas fa-list me-2 text-warning"></i>
+                        Все заявки на отпуск
+                    </a>
+                    <a href="{% url 'admin:index' %}" class="btn btn-outline-primary text-start">
+                        <i class="fas fa-cog me-2 text-secondary"></i>
+                        Админ-панель
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Прогресс онбординга -->
+<div class="row mb-4">
+    <div class="col">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-tasks me-2 text-success"></i>Прогресс онбординга (топ-10)</h5>
+            </div>
+            <div class="card-body">
+                {% for emp in employees_progress %}
+                    <div class="progress-card">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>{{ emp.name }}</span>
+                            <span class="fw-bold">{{ emp.progress }}%</span>
+                        </div>
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar progress-bar-custom" 
+                                 role="progressbar" 
+                                 style="width: {{ emp.progress }}%;" 
+                                 aria-valuenow="{{ emp.progress }}" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="100">
+                            </div>
+                        </div>
+                        <small class="text-muted">Выполнено {{ emp.completed }} из {{ emp.total }} задач</small>
+                    </div>
+                {% empty %}
+                    <p class="text-center text-muted py-4">Нет данных о прогрессе</p>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // График статусов заявок
+    const ctx = document.getElementById('vacationsChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Утверждено', 'В ожидании', 'Отклонено'],
+            datasets: [{
+                data: [
+                    {{ vacations_stats.approved }},
+                    {{ vacations_stats.pending }},
+                    {{ vacations_stats.rejected }}
+                ],
+                backgroundColor: [
+                    '#28a745',
+                    '#ffc107',
+                    '#dc3545'
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom'
+                }
+            },
+            cutout: '70%'
+        }
+    });
+});
+</script>
+{% endblock %}

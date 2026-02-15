@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Заявки на отпуск{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1><i class="fas fa-umbrella-beach me-3 text-success"></i>Заявки на отпуск</h1>
+    </div>
+    <div class="col-auto">
+        <a href="{% url 'vacations:create' %}" class="btn btn-success">
+            <i class="fas fa-plus-circle me-2"></i>Новая заявка
+        </a>
+        <a href="{% url 'vacations:calendar' %}" class="btn btn-outline-success">
+            <i class="fas fa-calendar-alt me-2"></i>Календарь
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        {% if vacations %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Сотрудник</th>
+                            <th>Период</th>
+                            <th>Дней</th>
+                            <th>Статус</th>
+                            <th>Дата создания</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for vacation in vacations %}
+                            <tr>
+                                <td>
+                                    <strong>{{ vacation.employee.name }}</strong><br>
+                                    <small class="text-muted">{{ vacation.employee.position|default:"" }}</small>
+                                </td>
+                                <td>
+                                    {{ vacation.start_date|date:"d.m.Y" }} - {{ vacation.end_date|date:"d.m.Y" }}
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">{{ vacation.days_count }} дн.</span>
+                                </td>
+                                <td>
+                                    {% if vacation.status == 'approved' %}
+                                        <span class="badge bg-success">Утверждён</span>
+                                    {% elif vacation.status == 'pending' %}
+                                        <span class="badge bg-warning text-dark">На согласовании</span>
+                                    {% elif vacation.status == 'rejected' %}
+                                        <span class="badge bg-danger">Отклонён</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">{{ vacation.status }}</span>
+                                    {% endif %}
+                                </td>
+                                <td>{{ vacation.created_at|date:"d.m.Y" }}</td>
+                                <td>
+                                    <a href="{% url 'vacations:detail' vacation.id %}" class="btn btn-sm btn-outline-primary">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info text-center py-5">
+                <i class="fas fa-umbrella-beach fa-4x mb-3 opacity-50"></i>
+                <h4>Нет заявок на отпуск</h4>
+                <p>Создайте первую заявку</p>
+                <a href="{% url 'vacations:create' %}" class="btn btn-success">
+                    <i class="fas fa-plus-circle me-2"></i>Создать заявку
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

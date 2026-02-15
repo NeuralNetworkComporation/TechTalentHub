@@ -1,5 +1,6 @@
 from django.db.models import Count, Q
 from django.utils import timezone
+from vacations.models import VacationRequest
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -124,3 +125,50 @@ def toggle_task(request, task_id):
             return JsonResponse({'success': False, 'error': str(e)}, status=400)
     
     return JsonResponse({'success': False, 'error': 'Invalid method'}, status=405)
+
+
+def api_stats(request):
+    """API для живой статистики на главной"""
+
+    total_employees = Employee.objects.filter(is_active=True).count()
+
+    # Сотрудники в онбординге (прогресс < 100% и > 0%)
+    in_onboarding = 0
+    for emp in Employee.objects.filter(is_active=True):
+        total_tasks = OnboardingTask.objects.count()
+        if total_tasks > 0:
+            completed = EmployeeOnboarding.objects.filter(
+                employee=emp, is_completed=True
+            ).count()
+            if completed < total_tasks and completed > 0:
+                in_onboarding += 1
+
+    # Сотрудники в отпуске сейчас
+    today = timezone.now().date()
+    on_vacation = 0
+    try:
+        on_vacation = VacationRequest.objects.filter(
+            status='approved',
+            start_date__lte=today,
+            end_date__gte=today
+        ).count()
+    except:
+        pass  # Если модель ещё не создана
+
+    # Завершившие онбординг
+    completed_onboarding = 0
+    for emp in Employee.objects.filter(is_active=True):
+        total_tasks = OnboardingTask.objects.count()
+        if total_tasks > 0:
+            completed = EmployeeOnboarding.objects.filter(
+                employee=emp, is_completed=True
+            ).count()
+            if completed == total_tasks:
+                completed_onboarding += 1
+
+    return JsonResponse({
+        'total_employees': total_employees,
+        'in_onboarding': in_onboarding,
+        'on_vacation': on_vacation,
+        'completed_onboarding': completed_onboarding,
+    })

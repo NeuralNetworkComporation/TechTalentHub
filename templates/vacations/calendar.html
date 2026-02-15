@@ -1,0 +1,124 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Календарь отпусков{% endblock %}
+
+{% block extra_css %}
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css' rel='stylesheet' />
+<style>
+    #calendar {
+        max-width: 1100px;
+        margin: 0 auto;
+        padding: 20px;
+        background: white;
+        border-radius: 15px;
+        box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    }
+    .fc-event {
+        cursor: pointer;
+        border-radius: 8px !important;
+        border: none !important;
+        padding: 3px 5px !important;
+        font-weight: 500;
+    }
+    .fc-event:hover {
+        transform: scale(1.02);
+        filter: brightness(0.95);
+    }
+    .fc-day-today {
+        background: rgba(47, 198, 246, 0.05) !important;
+    }
+    .fc-button-primary {
+        background-color: #2fc6f6 !important;
+        border-color: #2fc6f6 !important;
+    }
+    .fc-button-primary:hover {
+        background-color: #25b0e0 !important;
+        border-color: #25b0e0 !important;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1><i class="fas fa-calendar-alt me-3 text-primary"></i>Календарь отпусков</h1>
+    </div>
+    <div class="col-auto">
+        <a href="{% url 'vacations:list' %}" class="btn btn-outline-primary">
+            <i class="fas fa-list me-2"></i>Список заявок
+        </a>
+        <a href="{% url 'vacations:create' %}" class="btn btn-success">
+            <i class="fas fa-plus-circle me-2"></i>Новая заявка
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col">
+        <div id='calendar'></div>
+    </div>
+</div>
+
+<!-- Легенда -->
+<div class="row mt-4">
+    <div class="col">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title"><i class="fas fa-info-circle me-2 text-info"></i>О календаре</h5>
+                <p class="card-text">Зелёным отмечены утверждённые отпуска. Нажмите на событие, чтобы увидеть детали.</p>
+                <div class="d-flex gap-4">
+                    <span><i class="fas fa-square me-2" style="color: #2fc6f6;"></i> Отпуск</span>
+                    <span><i class="fas fa-square me-2" style="color: #ffc107;"></i> Сегодня</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.js'></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        locale: 'ru',
+        firstDay: 1,
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,listWeek'
+        },
+        buttonText: {
+            today: 'Сегодня',
+            month: 'Месяц',
+            week: 'Неделя',
+            list: 'Список'
+        },
+        events: '/vacations/api/calendar/',
+        eventClick: function(info) {
+            if (info.event.url) {
+                window.location.href = info.event.url;
+                return false;
+            }
+        },
+        eventDidMount: function(info) {
+            // Добавляем всплывающую подсказку
+            if (info.event.extendedProps.description) {
+                info.el.setAttribute('title', info.event.extendedProps.description);
+            }
+        },
+        loading: function(isLoading) {
+            if (isLoading) {
+                $('#calendar').addClass('loading');
+            } else {
+                $('#calendar').removeClass('loading');
+            }
+        }
+    });
+    calendar.render();
+});
+</script>
+{% endblock %}

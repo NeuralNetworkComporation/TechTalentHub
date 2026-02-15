@@ -1,33 +1,287 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Главная - TechTalentHub{% endblock %}
+{% block title %}TechTalentHub — HR-автоматизация для Битрикс24{% endblock %}
 
 {% block content %}
-<div class="row">
-    <div class="col-md-12 text-center">
-        <h1 class="display-4 mt-5">Добро пожаловать в TechTalentHub!</h1>
-        <p class="lead">Система автоматизации HR-процессов для Битрикс24</p>
+<!-- ГЛАВНЫЙ ЭКРАН (HERO) -->
+<section class="hero-section">
+    <div class="container">
+        <div class="row min-vh-75 align-items-center">
+            <div class="col-lg-6">
+                <h1 class="display-3 fw-bold mb-4">
+                    <span class="text-gradient">HR-автоматизация</span><br>
+                    для Битрикс24
+                </h1>
+                <p class="lead mb-4 text-muted">
+                    Онбординг сотрудников и управление отпусками без головной боли.
+                    Всё в одном месте, всё работает автоматически.
+                </p>
+                <div class="d-flex flex-wrap gap-3">
+                    <a href="{% url 'onboarding:dashboard' %}" class="btn btn-primary btn-lg px-4">
+                        <i class="fas fa-rocket me-2"></i>Начать работу
+                    </a>
+                    <a href="#features" class="btn btn-outline-primary btn-lg px-4">
+                        <i class="fas fa-play me-2"></i>Как это работает
+                    </a>
+                    <a href="#demo" class="btn btn-link text-primary">
+                        Смотреть демо <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                </div>
+                
+                <!-- Быстрая статистика -->
+                <div class="row mt-5 g-4">
+                    <div class="col-4">
+                        <div class="stat-card-mini">
+                            <h3 class="h2 fw-bold text-primary mb-0">5+</h3>
+                            <p class="text-muted mb-0">компаний</p>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="stat-card-mini">
+                            <h3 class="h2 fw-bold text-success mb-0">120+</h3>
+                            <p class="text-muted mb-0">сотрудников</p>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="stat-card-mini">
+                            <h3 class="h2 fw-bold text-warning mb-0">24/7</h3>
+                            <p class="text-muted mb-0">поддержка</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="hero-image text-center">
+                    <img src="https://cdn-icons-png.flaticon.com/512/2885/2885417.png" 
+                         alt="HR automation" 
+                         class="img-fluid floating" 
+                         style="max-width: 80%;">
+                </div>
+            </div>
+        </div>
     </div>
-</div>
+</section>
 
-<div class="row mt-5">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Онбординг сотрудников</h5>
-                <p class="card-text">Управление процессом адаптации новых сотрудников, чек-листы и назначение наставников.</p>
-                <a href="#" class="btn btn-primary">Перейти</a>
+<!-- ОСОБЕННОСТИ -->
+<section id="features" class="features-section py-5">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="display-5 fw-bold">Всё, что нужно для HR</h2>
+            <p class="lead text-muted">Три простых шага к автоматизации</p>
+        </div>
+        
+        <div class="row g-4">
+            <div class="col-md-4">
+                <div class="feature-card card h-100 border-0 shadow-hover">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon-wrapper bg-primary bg-opacity-10 rounded-circle mx-auto mb-4">
+                            <i class="fas fa-user-plus fa-3x text-primary"></i>
+                        </div>
+                        <h4>Онбординг</h4>
+                        <p class="text-muted mb-4">Автоматические чек-листы для новичков, назначение наставников и отслеживание прогресса.</p>
+                        <div class="feature-stats small text-muted">
+                            <span class="me-3"><i class="fas fa-check-circle text-success"></i> 100% задач</span>
+                            <span><i class="fas fa-clock text-warning"></i> -30% времени</span>
+                        </div>
+                        <a href="{% url 'onboarding:dashboard' %}" class="btn btn-outline-primary mt-3 w-100">
+                            Перейти к онбордингу
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card card h-100 border-0 shadow-hover">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon-wrapper bg-success bg-opacity-10 rounded-circle mx-auto mb-4">
+                            <i class="fas fa-umbrella-beach fa-3x text-success"></i>
+                        </div>
+                        <h4>Отпуска</h4>
+                        <p class="text-muted mb-4">Заявки на отпуск, автоматический расчёт дней, согласование с руководителем.</p>
+                        <div class="feature-stats small text-muted">
+                            <span class="me-3"><i class="fas fa-calendar-check text-success"></i> 28 дней</span>
+                            <span><i class="fas fa-users text-info"></i> Командный календарь</span>
+                        </div>
+                        <a href="{% url 'vacations:list' %}" class="btn btn-outline-success mt-3 w-100">
+                            Управлять отпусками
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <div class="feature-card card h-100 border-0 shadow-hover">
+                    <div class="card-body text-center p-4">
+                        <div class="feature-icon-wrapper bg-warning bg-opacity-10 rounded-circle mx-auto mb-4">
+                            <i class="fas fa-chart-line fa-3x text-warning"></i>
+                        </div>
+                        <h4>Аналитика</h4>
+                        <p class="text-muted mb-4">Дашборды с реальной статистикой, графики прогресса и отчёты для HR.</p>
+                        <div class="feature-stats small text-muted">
+                            <span class="me-3"><i class="fas fa-chart-pie text-primary"></i> В реальном времени</span>
+                            <span><i class="fas fa-download text-info"></i> Экспорт</span>
+                        </div>
+                        <a href="{% url 'analytics_dashboard' %}" class="btn btn-outline-warning mt-3 w-100">
+                            Смотреть аналитику
+                        </a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Управление отпусками</h5>
-                <p class="card-text">Заявки на отпуск, согласование с руководителем и календарь команды.</p>
-                <a href="#" class="btn btn-primary">Перейти</a>
+</section>
+
+<!-- КАК ЭТО РАБОТАЕТ -->
+<section class="how-it-works py-5 bg-light">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h2 class="display-6 fw-bold mb-4">Как это работает?</h2>
+                <div class="step-item d-flex mb-4">
+                    <div class="step-number me-4">
+                        <span class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">1</span>
+                    </div>
+                    <div>
+                        <h5>Подключаете Битрикс24</h5>
+                        <p class="text-muted">Один раз настраиваете вебхук — и всё работает автоматически</p>
+                    </div>
+                </div>
+                <div class="step-item d-flex mb-4">
+                    <div class="step-number me-4">
+                        <span class="bg-success text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">2</span>
+                    </div>
+                    <div>
+                        <h5>Сотрудники синхронизируются</h5>
+                        <p class="text-muted">Все данные загружаются автоматически, ничего не нужно вводить вручную</p>
+                    </div>
+                </div>
+                <div class="step-item d-flex mb-4">
+                    <div class="step-number me-4">
+                        <span class="bg-warning text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">3</span>
+                    </div>
+                    <div>
+                        <h5>Работаете в привычном интерфейсе</h5>
+                        <p class="text-muted">Все уведомления приходят в Битрикс24, события в календаре создаются автоматически</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="integration-showcase bg-white p-4 rounded-4 shadow">
+                    <i class="fab fa-bitrix fa-4x text-primary mb-3"></i>
+                    <h4>Прямая интеграция</h4>
+                    <p class="text-muted">Наше приложение работает как родная часть Битрикс24</p>
+                    <div class="integration-features list-unstyled">
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Календарь событий</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Уведомления в чат</li>
+                        <li><i class="fas fa-check-circle text-success me-2"></i>Синхронизация пользователей</li>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-</div>
+</section>
+
+<!-- ПРЕИМУЩЕСТВА -->
+<section class="benefits py-5">
+    <div class="container">
+        <h2 class="text-center display-6 fw-bold mb-5">Почему выбирают нас</h2>
+        <div class="row g-4">
+            <div class="col-md-3">
+                <div class="text-center">
+                    <i class="fas fa-bolt fa-3x text-warning mb-3"></i>
+                    <h5>Мгновенно</h5>
+                    <p class="text-muted small">Всё работает в реальном времени</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-center">
+                    <i class="fas fa-shield-alt fa-3x text-success mb-3"></i>
+                    <h5>Безопасно</h5>
+                    <p class="text-muted small">Данные только у вас</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-center">
+                    <i class="fas fa-mobile-alt fa-3x text-primary mb-3"></i>
+                    <h5>Адаптивно</h5>
+                    <p class="text-muted small">Работает на всех устройствах</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="text-center">
+                    <i class="fas fa-heart fa-3x text-danger mb-3"></i>
+                    <h5>Бесплатно</h5>
+                    <p class="text-muted small">На время разработки</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- ПРИЗЫВ К ДЕЙСТВИЮ -->
+<section class="cta-section py-5 bg-primary text-white">
+    <div class="container text-center">
+        <h2 class="display-6 fw-bold mb-4">Готовы автоматизировать HR?</h2>
+        <p class="lead mb-4">Начните прямо сейчас — это бесплатно на время разработки</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'onboarding:dashboard' %}" class="btn btn-light btn-lg px-5">
+                <i class="fas fa-rocket me-2"></i>Начать работу
+            </a>
+            <a href="#" class="btn btn-outline-light btn-lg px-5">
+                <i class="fas fa-calendar me-2"></i>Заказать демо
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- ДОПОЛНИТЕЛЬНЫЙ CSS -->
+<style>
+.text-gradient {
+    background: linear-gradient(135deg, #2fc6f6, #1b9fd8);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.min-vh-75 {
+    min-height: 75vh;
+}
+.shadow-hover {
+    transition: all 0.3s;
+}
+.shadow-hover:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+}
+.feature-icon-wrapper {
+    width: 100px;
+    height: 100px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.floating {
+    animation: float 3s ease-in-out infinite;
+}
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-20px); }
+    100% { transform: translateY(0px); }
+}
+.step-number span {
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+}
+.integration-showcase {
+    border-left: 4px solid #2fc6f6;
+}
+.integration-features li {
+    margin-bottom: 10px;
+    list-style: none;
+}
+</style>
 {% endblock %}
