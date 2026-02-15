@@ -1,13 +1,262 @@
-body {
-    background-color: #f8f9fa;
+/* ===== СТИЛЬ BITRIX24 ===== */
+:root {
+    --bx-primary: #2fc6f6;
+    --bx-primary-dark: #25b0e0;
+    --bx-secondary: #9dacbc;
+    --bx-success: #9dcf5d;
+    --bx-warning: #ffb236;
+    --bx-danger: #ff5757;
+    --bx-light: #f3f6f9;
+    --bx-dark: #535c69;
+    --bx-text: #333333;
+    --bx-border: #e0e6ed;
+    --bx-shadow: 0 5px 20px rgba(0,0,0,0.05);
+    --bx-shadow-hover: 0 10px 30px rgba(0,0,0,0.1);
+    --bx-radius: 10px;
+    --bx-radius-sm: 6px;
 }
 
+* {
+    font-family: 'Open Sans', 'Segoe UI', system-ui, sans-serif;
+}
+
+body {
+    background-color: #f8f9fc;
+    color: var(--bx-text);
+    line-height: 1.6;
+}
+
+/* ===== НАВИГАЦИЯ ===== */
+.navbar {
+    background: white !important;
+    box-shadow: var(--bx-shadow);
+    padding: 0.8rem 0;
+}
+
+.navbar-brand {
+    color: var(--bx-primary) !important;
+    font-weight: 600;
+    font-size: 1.5rem;
+    letter-spacing: -0.5px;
+}
+
+.navbar-brand i {
+    color: var(--bx-primary);
+    margin-right: 8px;
+}
+
+.nav-link {
+    color: var(--bx-dark) !important;
+    font-weight: 500;
+    padding: 0.5rem 1.2rem !important;
+    border-radius: 30px;
+    transition: all 0.2s;
+}
+
+.nav-link:hover {
+    background: var(--bx-light);
+    color: var(--bx-primary) !important;
+}
+
+.nav-link i {
+    margin-right: 6px;
+    font-size: 1rem;
+}
+
+/* ===== КАРТОЧКИ ===== */
 .card {
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: transform 0.2s;
+    border: 1px solid var(--bx-border);
+    border-radius: var(--bx-radius);
+    box-shadow: var(--bx-shadow);
+    transition: all 0.3s;
+    overflow: hidden;
 }
 
 .card:hover {
+    box-shadow: var(--bx-shadow-hover);
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.card-header {
+    background: white;
+    border-bottom: 1px solid var(--bx-border);
+    padding: 1.2rem 1.5rem;
+    font-weight: 600;
+}
+
+.card-header i {
+    color: var(--bx-primary);
+}
+
+/* ===== СТАТИСТИКА ===== */
+.stat-card {
+    border: none;
+    border-radius: var(--bx-radius);
+    padding: 1.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-card.primary {
+    background: linear-gradient(135deg, #2fc6f6, #1b9fd8);
+}
+
+.stat-card.success {
+    background: linear-gradient(135deg, #9dcf5d, #7fb045);
+}
+
+.stat-card.warning {
+    background: linear-gradient(135deg, #ffb236, #f39c12);
+}
+
+.stat-card.info {
+    background: linear-gradient(135deg, #6a8df9, #4a6cf7);
+}
+
+.stat-card h6 {
+    color: rgba(255,255,255,0.9);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 0.5rem;
+}
+
+.stat-card h2 {
+    color: white;
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 0;
+}
+
+.stat-card i {
+    position: absolute;
+    right: 1.5rem;
+    bottom: 1.5rem;
+    font-size: 3.5rem;
+    color: rgba(255,255,255,0.3);
+}
+
+/* ===== КНОПКИ ===== */
+.btn {
+    border-radius: 30px;
+    padding: 0.6rem 1.5rem;
+    font-weight: 500;
+    font-size: 0.95rem;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background: var(--bx-primary);
+    border: none;
+}
+
+.btn-primary:hover {
+    background: var(--bx-primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba(47, 198, 246, 0.3);
+}
+
+.btn-outline-primary {
+    border: 1px solid var(--bx-primary);
+    color: var(--bx-primary);
+}
+
+.btn-outline-primary:hover {
+    background: var(--bx-primary);
+    border-color: var(--bx-primary);
+}
+
+.btn-lg {
+    padding: 0.8rem 2rem;
+    font-size: 1rem;
+}
+
+/* ===== ПРОГРЕСС-БАР ===== */
+.progress {
+    background: var(--bx-light);
+    border-radius: 30px;
+    height: 8px;
+}
+
+.progress-bar {
+    border-radius: 30px;
+    background: linear-gradient(90deg, var(--bx-primary), var(--bx-primary-dark));
+}
+
+/* ===== БЭЙДЖИ ===== */
+.badge {
+    padding: 0.5rem 1rem;
+    border-radius: 30px;
+    font-weight: 500;
+    font-size: 0.85rem;
+}
+
+.badge.bg-success {
+    background: var(--bx-success) !important;
+}
+
+.badge.bg-warning {
+    background: var(--bx-warning) !important;
+    color: white;
+}
+
+/* ===== АЛЕРТЫ ===== */
+.alert {
+    border: none;
+    border-radius: var(--bx-radius);
+    padding: 1.2rem 1.5rem;
+}
+
+.alert-info {
+    background: #e3f2fd;
+    color: #0b5b8f;
+}
+
+.alert-info i {
+    color: var(--bx-primary);
+}
+
+/* ===== ФОРМЫ ===== */
+.form-control {
+    border: 1px solid var(--bx-border);
+    border-radius: var(--bx-radius-sm);
+    padding: 0.6rem 1rem;
+}
+
+.form-control:focus {
+    border-color: var(--bx-primary);
+    box-shadow: 0 0 0 3px rgba(47, 198, 246, 0.1);
+}
+
+/* ===== ЧЕК-ЛИСТ ===== */
+.list-group-item {
+    border: none;
+    border-bottom: 1px solid var(--bx-border);
+    padding: 1.2rem 1.5rem;
+}
+
+.list-group-item:last-child {
+    border-bottom: none;
+}
+
+.form-check-input:checked {
+    background-color: var(--bx-success);
+    border-color: var(--bx-success);
+}
+
+/* ===== ПОДВАЛ ===== */
+footer {
+    background: white !important;
+    border-top: 1px solid var(--bx-border);
+    color: var(--bx-secondary) !important;
+}
+
+/* ===== АНИМАЦИИ ===== */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.card {
+    animation: fadeIn 0.5s ease;
 }

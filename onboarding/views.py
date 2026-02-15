@@ -1,3 +1,5 @@
+from django.db.models import Count, Q
+from django.utils import timezone
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
@@ -8,40 +10,71 @@ from .models import OnboardingTask, EmployeeOnboarding
 import json
 from datetime import datetime, timedelta
 
+
 @login_required
 def dashboard(request):
-    """Дашборд HR с прогрессом новичков"""
-    # Получаем новых сотрудников (принятых за последние 30 дней)
-    thirty_days_ago = datetime.now().date() - timedelta(days=30)
-    
+    """ДАШБОРД БОМБА - с реальной статистикой"""
+
+    # Основная статистика
+    total_employees = Employee.objects.filter(is_active=True).count()
+
+    # Новые за последние 30 дней
+    thirty_days_ago = timezone.now().date() - timedelta(days=30)
     new_employees = Employee.objects.filter(
         hire_date__gte=thirty_days_ago,
         is_active=True
-    ).order_by('-hire_date')
-    
-    # Считаем прогресс для каждого
+    ).count()
+
+    # Прогресс онбординга
+    total_tasks = OnboardingTask.objects.count()
+
+    # Сотрудники с их прогрессом
     employees_data = []
-    for employee in new_employees:
-        total_tasks = OnboardingTask.objects.count()
+    employees = Employee.objects.filter(is_active=True)
+
+    completed_onboarding = 0
+    in_progress = 0
+
+    for employee in employees:
         completed_tasks = EmployeeOnboarding.objects.filter(
             employee=employee,
             is_completed=True
         ).count()
-        
-        progress = 0
+
         if total_tasks > 0:
             progress = int((completed_tasks / total_tasks) * 100)
-        
+
+            if progress == 100:
+                completed_onboarding += 1
+            elif progress > 0:
+                in_progress += 1
+        else:
+            progress = 0
+
         employees_data.append({
             'employee': employee,
             'progress': progress,
             'completed': completed_tasks,
             'total': total_tasks,
         })
-    
-    return render(request, 'onboarding/dashboard.html', {
+
+    # Сортируем по прогрессу (сначала те, у кого меньше)
+    employees_data.sort(key=lambda x: x['progress'])
+
+    # Берём топ-5 самых новых
+    recent_employees = employees_data[:5]
+
+    context = {
+        'total_employees': total_employees,
+        'new_employees': new_employees,
+        'completed_onboarding': completed_onboarding,
+        'in_progress': in_progress,
         'employees': employees_data,
-    })
+        'recent_employees': recent_employees,
+        'total_tasks': total_tasks,
+    }
+
+    return render(request, 'onboarding/dashboard.html', context)
 
 @login_required
 def employee_checklist(request, employee_id):
