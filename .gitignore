@@ -1,0 +1,26 @@
+# Создать .gitignore и сразу наполнить его
+@"
+# Виртуальное окружение
+.venv/
+venv/
+ENV/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+db.sqlite3
+
+# PyCharm
+.idea/
+*.iml
+
+# Env файлы
+.env
+*.env
+
+# OS
+.DS_Store
+Thumbs.db
+"@ | Out-File -FilePath .gitignore -Encoding utf8
