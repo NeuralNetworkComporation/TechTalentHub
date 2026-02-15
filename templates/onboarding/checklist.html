@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Чек-лист: {{ employee.name }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1>Чек-лист первой недели</h1>
+        <h4>{{ employee.name }} <small class="text-muted">{{ employee.position|default:"" }}</small></h4>
+    </div>
+    <div class="col-auto">
+        <a href="{% url 'onboarding:dashboard' %}" class="btn btn-outline-secondary">
+            ← Назад к дашборду
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Задачи на первую неделю</h5>
+            </div>
+            <div class="list-group list-group-flush">
+                {% for item in checklist %}
+                    <div class="list-group-item">
+                        <div class="form-check">
+                            <input class="form-check-input task-checkbox" 
+                                   type="checkbox" 
+                                   data-task-id="{{ item.progress_id }}"
+                                   {% if item.completed %}checked{% endif %}
+                                   id="task_{{ item.progress_id }}">
+                            <label class="form-check-label {% if item.completed %}text-decoration-line-through{% endif %}" 
+                                   for="task_{{ item.progress_id }}">
+                                <strong>{{ item.task.title }}</strong>
+                                {% if item.task.description %}
+                                    <br><small class="text-muted">{{ item.task.description }}</small>
+                                {% endif %}
+                            </label>
+                        </div>
+                    </div>
+                {% empty %}
+                    <div class="list-group-item text-center">
+                        <p class="mb-3">Нет задач для онбординга.</p>
+                        <a href="{% url 'admin:onboarding_onboardingtask_changelist' %}" class="btn btn-primary">
+                            Создать задачи в админке
+                        </a>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const checkboxes = document.querySelectorAll('.task-checkbox');
+    
+    checkboxes.forEach(checkbox => {
+        checkbox.addEventListener('change', function() {
+            const taskId = this.dataset.taskId;
+            const completed = this.checked;
+            const label = this.nextElementSibling;
+            
+            // Визуальная обратная связь сразу
+            if (completed) {
+                label.classList.add('text-decoration-line-through');
+            } else {
+                label.classList.remove('text-decoration-line-through');
+            }
+            
+            // Отправляем AJAX запрос
+            fetch('{% url "onboarding:toggle_task" 0 %}'.replace('0', taskId), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: JSON.stringify({ completed: completed })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (!data.success) {
+                    // Если ошибка - возвращаем чекбокс в исходное состояние
+                    this.checked = !completed;
+                    if (completed) {
+                        label.classList.remove('text-decoration-line-through');
+                    } else {
+                        label.classList.add('text-decoration-line-through');
+                    }
+                    alert('Ошибка при обновлении задачи');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                this.checked = !completed;
+                if (completed) {
+                    label.classList.remove('text-decoration-line-through');
+                } else {
+                    label.classList.add('text-decoration-line-through');
+                }
+            });
+        });
+    });
+});
+</script>
+{% endblock %}
