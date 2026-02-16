@@ -4,194 +4,286 @@
 {% block title %}Аналитика и отчёты{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.css">
 <style>
-    .stat-card {
-        border-radius: 15px;
-        padding: 1.5rem;
-        height: 100%;
-        transition: transform 0.2s;
+    .analytics-gradient-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 25px;
+        color: white;
     }
-    .stat-card:hover {
-        transform: translateY(-5px);
+    .metric-card {
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        border: 1px solid #f0f0f0;
+        transition: all 0.3s;
     }
-    .stat-icon {
-        width: 60px;
-        height: 60px;
+    .metric-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    }
+    .metric-icon {
+        width: 50px;
+        height: 50px;
         border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 1.8rem;
+        font-size: 24px;
     }
-    .progress-card {
-        border-radius: 12px;
-        padding: 1rem;
-        margin-bottom: 0.5rem;
-        background: #f8f9fc;
-        transition: all 0.2s;
+    .progress-ring {
+        position: relative;
+        width: 120px;
+        height: 120px;
     }
-    .progress-card:hover {
-        background: #e8f0fe;
+    .progress-ring-circle {
+        transform: rotate(-90deg);
+        transform-origin: 50% 50%;
     }
-    .progress-bar-custom {
-        height: 8px;
-        border-radius: 4px;
-        background: linear-gradient(90deg, #2fc6f6, #1b9fd8);
+    .analytics-table {
+        border-radius: 16px;
+        overflow: hidden;
+        border: 1px solid #f0f0f0;
+    }
+    .analytics-table thead {
+        background: linear-gradient(135deg, #f8f9ff 0%, #ffffff 100%);
     }
 </style>
 {% endblock %}
 
 {% block content %}
-<!-- Заголовок -->
-<div class="row mb-4">
-    <div class="col">
-        <h1><i class="fas fa-chart-line me-3 text-primary"></i>Аналитика и отчёты</h1>
-        <p class="text-muted">Статистика компании в реальном времени</p>
-    </div>
-    <div class="col-auto">
-        <button class="btn btn-outline-primary" onclick="window.location.reload()">
-            <i class="fas fa-sync-alt me-2"></i>Обновить
-        </button>
+<!-- Заголовок с градиентом -->
+<div class="row mb-5">
+    <div class="col-12">
+        <div class="analytics-gradient-card d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="display-5 fw-bold mb-2">
+                    <i class="fas fa-chart-pie me-3"></i>Аналитика
+                </h1>
+                <p class="mb-0 opacity-75">Полная статистика по компании в реальном времени</p>
+            </div>
+            <div class="text-end">
+                <span class="badge bg-white text-dark px-4 py-2 rounded-pill">
+                    <i class="fas fa-calendar me-2"></i>{% now "d.m.Y" %}
+                </span>
+            </div>
+        </div>
     </div>
 </div>
 
-<!-- Основные показатели -->
+<!-- Основные метрики (уникальные карточки) -->
 <div class="row g-4 mb-5">
-    <div class="col-md-3">
-        <div class="stat-card bg-primary text-white">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h6 class="text-uppercase mb-2 opacity-75">Всего сотрудников</h6>
-                    <h2 class="display-5 fw-bold mb-0">{{ total_employees }}</h2>
-                    <small class="opacity-75">активных</small>
-                </div>
-                <div class="stat-icon bg-white bg-opacity-25">
+    <div class="col-xl-3 col-md-6">
+        <div class="metric-card">
+            <div class="d-flex align-items-center mb-3">
+                <div class="metric-icon bg-primary bg-opacity-10 text-primary me-3">
                     <i class="fas fa-users"></i>
                 </div>
-            </div>
-        </div>
-    </div>
-    
-    <div class="col-md-3">
-        <div class="stat-card bg-success text-white">
-            <div class="d-flex justify-content-between align-items-center">
                 <div>
-                    <h6 class="text-uppercase mb-2 opacity-75">Новые за месяц</h6>
-                    <h2 class="display-5 fw-bold mb-0">{{ new_employees }}</h2>
-                    <small class="opacity-75">принято</small>
-                </div>
-                <div class="stat-icon bg-white bg-opacity-25">
-                    <i class="fas fa-user-plus"></i>
+                    <span class="text-muted small">Всего сотрудников</span>
+                    <h2 class="mb-0 fw-bold">{{ total_employees }}</h2>
                 </div>
             </div>
+            <div class="progress" style="height: 4px;">
+                <div class="progress-bar bg-primary" style="width: 100%"></div>
+            </div>
+            <small class="text-muted mt-2 d-block">
+                <i class="fas fa-arrow-up text-success me-1"></i>+{{ new_employees }} за месяц
+            </small>
         </div>
     </div>
-    
-    <div class="col-md-3">
-        <div class="stat-card bg-warning text-white">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h6 class="text-uppercase mb-2 opacity-75">В отпуске сейчас</h6>
-                    <h2 class="display-5 fw-bold mb-0">{{ on_vacation_now }}</h2>
-                    <small class="opacity-75">человек</small>
-                </div>
-                <div class="stat-icon bg-white bg-opacity-25">
+
+    <div class="col-xl-3 col-md-6">
+        <div class="metric-card">
+            <div class="d-flex align-items-center mb-3">
+                <div class="metric-icon bg-success bg-opacity-10 text-success me-3">
                     <i class="fas fa-umbrella-beach"></i>
                 </div>
+                <div>
+                    <span class="text-muted small">В отпуске</span>
+                    <h2 class="mb-0 fw-bold">{{ on_vacation_now }}</h2>
+                </div>
             </div>
+            <div class="progress" style="height: 4px;">
+                <div class="progress-bar bg-success" style="width: {{ on_vacation_now|floatformat:0 }}%"></div>
+            </div>
+            <small class="text-muted mt-2 d-block">
+                <i class="fas fa-clock me-1"></i>Сейчас отдыхают
+            </small>
         </div>
     </div>
-    
-    <div class="col-md-3">
-        <div class="stat-card bg-info text-white">
-            <div class="d-flex justify-content-between align-items-center">
-                <div>
-                    <h6 class="text-uppercase mb-2 opacity-75">Заявок на отпуск</h6>
-                    <h2 class="display-5 fw-bold mb-0">{{ vacations_stats.pending }}</h2>
-                    <small class="opacity-75">ожидают</small>
-                </div>
-                <div class="stat-icon bg-white bg-opacity-25">
+
+    <div class="col-xl-3 col-md-6">
+        <div class="metric-card">
+            <div class="d-flex align-items-center mb-3">
+                <div class="metric-icon bg-warning bg-opacity-10 text-warning me-3">
                     <i class="fas fa-clock"></i>
                 </div>
+                <div>
+                    <span class="text-muted small">Ожидают</span>
+                    <h2 class="mb-0 fw-bold">{{ vacations_stats.pending }}</h2>
+                </div>
             </div>
+            <div class="progress" style="height: 4px;">
+                <div class="progress-bar bg-warning" style="width: {{ vacations_stats.pending }}%"></div>
+            </div>
+            <small class="text-muted mt-2 d-block">
+                <i class="fas fa-file-signature me-1"></i>Заявок на согласовании
+            </small>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6">
+        <div class="metric-card">
+            <div class="d-flex align-items-center mb-3">
+                <div class="metric-icon bg-info bg-opacity-10 text-info me-3">
+                    <i class="fas fa-check-circle"></i>
+                </div>
+                <div>
+                    <span class="text-muted small">Утверждено</span>
+                    <h2 class="mb-0 fw-bold">{{ vacations_stats.approved }}</h2>
+                </div>
+            </div>
+            <div class="progress" style="height: 4px;">
+                <div class="progress-bar bg-info" style="width: {{ vacations_stats.approved }}%"></div>
+            </div>
+            <small class="text-muted mt-2 d-block">
+                <i class="fas fa-thumbs-up me-1"></i>Одобренных заявок
+            </small>
         </div>
     </div>
 </div>
 
-<!-- Графики и статистика -->
+<!-- Графики и таблицы -->
 <div class="row g-4 mb-5">
-    <!-- Статусы заявок -->
-    <div class="col-md-6">
-        <div class="card shadow-sm h-100">
-            <div class="card-header bg-white">
-                <h5 class="mb-0"><i class="fas fa-chart-pie me-2 text-primary"></i>Статусы заявок на отпуск</h5>
+    <!-- Круговая диаграмма статусов -->
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="mb-0 fw-bold">
+                    <i class="fas fa-chart-pie me-2 text-primary"></i>
+                    Статусы заявок на отпуск
+                </h5>
             </div>
-            <div class="card-body">
-                <canvas id="vacationsChart" height="200"></canvas>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Быстрые действия -->
-    <div class="col-md-6">
-        <div class="card shadow-sm h-100">
-            <div class="card-header bg-white">
-                <h5 class="mb-0"><i class="fas fa-bolt me-2 text-warning"></i>Быстрые действия</h5>
-            </div>
-            <div class="card-body">
-                <div class="d-grid gap-3">
-                    <a href="{% url 'vacations:create' %}" class="btn btn-outline-primary text-start">
-                        <i class="fas fa-plus-circle me-2 text-success"></i>
-                        Создать заявку на отпуск
-                    </a>
-                    <a href="{% url 'onboarding:dashboard' %}" class="btn btn-outline-primary text-start">
-                        <i class="fas fa-tasks me-2 text-info"></i>
-                        Проверить онбординг
-                    </a>
-                    <a href="{% url 'vacations:list' %}" class="btn btn-outline-primary text-start">
-                        <i class="fas fa-list me-2 text-warning"></i>
-                        Все заявки на отпуск
-                    </a>
-                    <a href="{% url 'admin:index' %}" class="btn btn-outline-primary text-start">
-                        <i class="fas fa-cog me-2 text-secondary"></i>
-                        Админ-панель
-                    </a>
+            <div class="card-body text-center">
+                <canvas id="vacationsChart" style="max-height: 250px;"></canvas>
+                <div class="row mt-4 g-2">
+                    <div class="col-4">
+                        <span class="badge bg-success rounded-pill px-3 py-2">Утверждено {{ vacations_stats.approved }}</span>
+                    </div>
+                    <div class="col-4">
+                        <span class="badge bg-warning rounded-pill px-3 py-2">Ожидает {{ vacations_stats.pending }}</span>
+                    </div>
+                    <div class="col-4">
+                        <span class="badge bg-danger rounded-pill px-3 py-2">Отклонено {{ vacations_stats.rejected }}</span>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 
-<!-- Прогресс онбординга -->
-<div class="row mb-4">
-    <div class="col">
-        <div class="card shadow-sm">
-            <div class="card-header bg-white">
-                <h5 class="mb-0"><i class="fas fa-tasks me-2 text-success"></i>Прогресс онбординга (топ-10)</h5>
+    <!-- Прогресс онбординга (уникальный вид) -->
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm h-100">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="mb-0 fw-bold">
+                    <i class="fas fa-tasks me-2 text-success"></i>
+                    Топ-5 сотрудников по прогрессу
+                </h5>
             </div>
             <div class="card-body">
-                {% for emp in employees_progress %}
-                    <div class="progress-card">
-                        <div class="d-flex justify-content-between mb-1">
-                            <span>{{ emp.name }}</span>
-                            <span class="fw-bold">{{ emp.progress }}%</span>
+                {% for emp in employees_progress|slice:":5" %}
+                    <div class="d-flex align-items-center mb-3">
+                        <div class="flex-shrink-0 me-3">
+                            <span class="badge bg-light text-dark rounded-circle p-3">{{ forloop.counter }}</span>
                         </div>
-                        <div class="progress" style="height: 8px;">
-                            <div class="progress-bar progress-bar-custom" 
-                                 role="progressbar" 
-                                 style="width: {{ emp.progress }}%;" 
-                                 aria-valuenow="{{ emp.progress }}" 
-                                 aria-valuemin="0" 
-                                 aria-valuemax="100">
+                        <div class="flex-grow-1">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="fw-medium">{{ emp.name }}</span>
+                                <span class="text-primary fw-bold">{{ emp.progress }}%</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar bg-gradient"
+                                     role="progressbar"
+                                     style="width: {{ emp.progress }}%; background: linear-gradient(90deg, #2fc6f6, #667eea);"
+                                     aria-valuenow="{{ emp.progress }}"
+                                     aria-valuemin="0"
+                                     aria-valuemax="100">
+                                </div>
                             </div>
                         </div>
-                        <small class="text-muted">Выполнено {{ emp.completed }} из {{ emp.total }} задач</small>
                     </div>
                 {% empty %}
                     <p class="text-center text-muted py-4">Нет данных о прогрессе</p>
                 {% endfor %}
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Детальная таблица -->
+<div class="row">
+    <div class="col-12">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white border-0 py-3">
+                <h5 class="mb-0 fw-bold">
+                    <i class="fas fa-list me-2 text-warning"></i>
+                    Детальная статистика
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="analytics-table">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Показатель</th>
+                                <th class="text-center">Значение</th>
+                                <th class="text-end">Динамика</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><i class="fas fa-user-check me-2 text-success"></i>Активных сотрудников</td>
+                                <td class="text-center">{{ total_employees }}</td>
+                                <td class="text-end text-success">+12%</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fas fa-user-plus me-2 text-info"></i>Новых за месяц</td>
+                                <td class="text-center">{{ new_employees }}</td>
+                                <td class="text-end text-success">+{{ new_employees }}</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fas fa-umbrella-beach me-2 text-warning"></i>Заявок на отпуск</td>
+                                <td class="text-center">{{ vacations_stats.pending|add:vacations_stats.approved|add:vacations_stats.rejected }}</td>
+                                <td class="text-end text-muted">всего</td>
+                            </tr>
+                            <tr>
+                                <td><i class="fas fa-check-circle me-2 text-success"></i>Завершили онбординг</td>
+                                <td class="text-center">{{ completed_onboarding }}</td>
+                                <td class="text-end text-primary">{{ completed_onboarding|floatformat:0 }}%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Кнопки действий -->
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="d-flex gap-2 justify-content-end">
+            <a href="{% url 'vacations:list' %}" class="btn btn-outline-primary">
+                <i class="fas fa-list me-2"></i>Все заявки
+            </a>
+            <a href="{% url 'onboarding:dashboard' %}" class="btn btn-outline-success">
+                <i class="fas fa-tasks me-2"></i>Онбординг
+            </a>
+            <a href="{% url 'vacations:create' %}" class="btn btn-primary">
+                <i class="fas fa-plus-circle me-2"></i>Новая заявка
+            </a>
         </div>
     </div>
 </div>
@@ -223,9 +315,10 @@ document.addEventListener('DOMContentLoaded', function() {
         },
         options: {
             responsive: true,
+            maintainAspectRatio: true,
             plugins: {
                 legend: {
-                    position: 'bottom'
+                    display: false
                 }
             },
             cutout: '70%'

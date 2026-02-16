@@ -15,7 +15,7 @@
 </head>
 <body>
     <!-- Навигация -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-light bg-white sticky-top shadow-sm">
         <div class="container">
             <a class="navbar-brand" href="/">TechTalentHub</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -39,6 +39,11 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{% url 'analytics_dashboard' %}">
                             <i class="fas fa-chart-line me-1"></i>Аналитика
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'users:list' %}">
+                            <i class="fas fa-users me-1"></i>Сотрудники
                         </a>
                     </li>
                     {% if user.is_authenticated %}
@@ -75,5 +80,22 @@
     
     <!-- Custom JS -->
     <script src="{% static 'js/main.js' %}"></script>
+<!-- Footer -->
+<footer class="bg-white border-top mt-5 py-4">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <span class="text-muted small">
+                    <i class="fas fa-copyright me-1"></i> {% now "Y" %} TechTalentHub — HR-автоматизация для Битрикс24
+                </span>
+            </div>
+            <div class="col-md-6 text-end">
+                <a href="#" class="text-muted me-3"><i class="fab fa-telegram"></i></a>
+                <a href="#" class="text-muted me-3"><i class="fab fa-vk"></i></a>
+                <a href="#" class="text-muted"><i class="fab fa-github"></i></a>
+            </div>
+        </div>
+    </div>
+</footer>
 </body>
 </html>
