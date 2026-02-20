@@ -20,12 +20,14 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
+
     # Наши приложения
     'core',
     'users',
     'onboarding',
     'vacations',
+    'analytics',
+    'notifications',
 ]
 
 MIDDLEWARE = [
@@ -47,6 +49,7 @@ TEMPLATES = [
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
+                'notifications.context_processors.notifications',
                 'django.template.context_processors.debug',
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
@@ -102,3 +105,8 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Настройки для Bitrix24 (добавим позже)
 BITRIX24_WEBHOOK = os.getenv('BITRIX24_WEBHOOK', '')
+
+# Куда перенаправлять неавторизованных пользователей
+LOGIN_URL = '/admin/login/'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'

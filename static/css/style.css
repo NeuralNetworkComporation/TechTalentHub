@@ -340,3 +340,302 @@ footer {
         margin: 0 auto;
     }
 }
+
+/* ===== АНИМАЦИИ ===== */
+/* Убираем анимацию при загрузке */
+.card {
+    animation: none; /* Отключаем анимацию при загрузке */
+}
+
+/* Оставляем только hover-эффекты */
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.btn {
+    transition: all 0.2s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+}
+
+.nav-link {
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+/* Убираем все ключевые анимации */
+@keyframes fadeInUp { display: none; }
+@keyframes pulse { display: none; }
+@keyframes slideInRight { display: none; }
+@keyframes glow { display: none; }
+@keyframes notificationPulse { display: none; }
+@keyframes spin { display: none; }
+
+/* Лоадер оставляем, но без анимации */
+.loader {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #f3f3f3;
+    border-radius: 50%;
+    border-top: 5px solid #2fc6f6;
+    /* Убираем animation: spin 1s linear infinite; */
+}
+
+/* Плавное появление модалок */
+.modal.fade .modal-dialog {
+    transition: transform 0.2s ease-out;
+    transform: scale(0.95);
+}
+
+.modal.show .modal-dialog {
+    transform: scale(1);
+}
+
+/* Убираем задержки анимации */
+.card:nth-child(1),
+.card:nth-child(2),
+.card:nth-child(3),
+.card:nth-child(4),
+.card:nth-child(5),
+.card:nth-child(6) {
+    animation-delay: 0s;
+}
+
+/* ===== ТЁМНАЯ ТЕМА ===== */
+[data-theme="dark"] {
+    --bg-primary: #1a1e2b;
+    --bg-secondary: #252b3b;
+    --text-primary: #ffffff;
+    --text-secondary: #a0a8b8;
+    --border-color: #2f3547;
+    --card-bg: #252b3b;
+    --navbar-bg: #1a1e2b;
+    --hover-bg: #2f3547;
+}
+
+/* Основной фон */
+[data-theme="dark"] body {
+    background-color: var(--bg-primary) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Навигация */
+[data-theme="dark"] .navbar {
+    background-color: var(--navbar-bg) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+}
+
+[data-theme="dark"] .navbar-brand,
+[data-theme="dark"] .nav-link {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .nav-link:hover {
+    color: #2fc6f6 !important;
+    background-color: var(--hover-bg);
+}
+
+/* Карточки */
+[data-theme="dark"] .card {
+    background-color: var(--card-bg) !important;
+    border: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .card-header {
+    background-color: var(--card-bg) !important;
+    border-bottom: 1px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .card-title,
+[data-theme="dark"] .card-text {
+    color: var(--text-primary) !important;
+}
+
+/* Текст */
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6,
+[data-theme="dark"] p,
+[data-theme="dark"] span,
+[data-theme="dark"] div:not(.fc-event) {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .text-muted {
+    color: var(--text-secondary) !important;
+}
+
+/* Таблицы */
+[data-theme="dark"] .table {
+    color: var(--text-primary) !important;
+    background-color: var(--card-bg) !important;
+}
+
+[data-theme="dark"] .table thead {
+    background-color: var(--bg-secondary) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .table td,
+[data-theme="dark"] .table th {
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Формы */
+[data-theme="dark"] .form-control {
+    background-color: var(--bg-secondary) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .form-control:focus {
+    border-color: #2fc6f6 !important;
+    box-shadow: 0 0 0 0.2rem rgba(47, 198, 246, 0.25);
+}
+
+/* Кнопки */
+[data-theme="dark"] .btn-outline-primary {
+    color: #2fc6f6 !important;
+    border-color: #2fc6f6 !important;
+}
+
+[data-theme="dark"] .btn-outline-primary:hover {
+    background-color: #2fc6f6 !important;
+    color: white !important;
+}
+
+[data-theme="dark"] .btn-outline-secondary {
+    color: var(--text-secondary) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* Алерты */
+[data-theme="dark"] .alert-info {
+    background-color: #1a3a4a !important;
+    color: #a8e6ff !important;
+    border-color: #2a4a5a !important;
+}
+
+[data-theme="dark"] .alert-success {
+    background-color: #1a3a2a !important;
+    color: #a8ffb8 !important;
+    border-color: #2a4a3a !important;
+}
+
+[data-theme="dark"] .alert-warning {
+    background-color: #4a3a1a !important;
+    color: #ffe6a8 !important;
+    border-color: #5a4a2a !important;
+}
+
+/* Выпадающие меню */
+[data-theme="dark"] .dropdown-menu {
+    background-color: var(--bg-secondary) !important;
+    border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .dropdown-item {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .dropdown-item:hover {
+    background-color: var(--hover-bg) !important;
+    color: #2fc6f6 !important;
+}
+
+/* Уведомления */
+[data-theme="dark"] .notification-menu {
+    background-color: var(--bg-secondary) !important;
+}
+
+/* Границы - УБИРАЕМ ЧЁРНЫЕ */
+[data-theme="dark"] * {
+    border-color: var(--border-color) !important;
+}
+
+/* Прогресс-бары */
+[data-theme="dark"] .progress {
+    background-color: var(--bg-primary) !important;
+}
+
+/* Подвал */
+[data-theme="dark"] footer {
+    background-color: var(--navbar-bg) !important;
+    border-top-color: var(--border-color) !important;
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] footer .text-muted {
+    color: var(--text-secondary) !important;
+}
+
+/* ===== ВИДИМЫЕ КНОПКИ ===== */
+#themeToggle {
+    color: #2fc6f6 !important;
+    background: transparent;
+    border: none;
+    font-size: 1.2rem;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    display: inline-block;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+#themeToggle i {
+    color: #2fc6f6 !important;
+    font-size: 1.2rem;
+}
+
+#notificationDropdown {
+    color: #2fc6f6 !important;
+    position: relative;
+    padding: 0.5rem 1rem;
+}
+
+#notificationDropdown i {
+    color: #2fc6f6 !important;
+    font-size: 1.2rem;
+}
+
+.notification-badge {
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: #ff5757 !important;
+    color: white !important;
+    font-size: 0.7rem;
+    padding: 0.2rem 0.4rem;
+    border-radius: 50%;
+    min-width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    visibility: visible !important;
+    opacity: 1 !important;
+}
+
+.notification-menu {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+/* Убеждаемся, что иконки Font Awesome видны */
+.fas, .far, .fab {
+    font-family: 'Font Awesome 6 Free' !important;
+    font-weight: 900;
+    display: inline-block;
+    visibility: visible !important;
+    opacity: 1 !important;
+}

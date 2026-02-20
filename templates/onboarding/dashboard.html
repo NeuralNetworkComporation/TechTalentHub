@@ -1,112 +1,145 @@
 {% extends 'base.html' %}
 {% load static %}
 
-{% block title %}Дашборд - TechTalentHub{% endblock %}
+{% block title %}Онбординг - Дашборд{% endblock %}
+
+{% block extra_css %}
+<style>
+    .onboarding-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border-radius: 20px;
+        padding: 30px;
+        color: white;
+        margin-bottom: 30px;
+    }
+    .employee-card {
+        border-radius: 16px;
+        border: 1px solid #f0f0f0;
+        transition: all 0.2s;
+        height: 100%;
+    }
+    .employee-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+    }
+    .progress-circle {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: conic-gradient(#2fc6f6 0deg, #f0f0f0 0deg);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+    }
+    .progress-circle span {
+        background: white;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.1rem;
+    }
+    .status-badge {
+        padding: 5px 12px;
+        border-radius: 30px;
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+    .status-badge.new {
+        background: #e3f2fd;
+        color: #1976d2;
+    }
+    .status-badge.in-progress {
+        background: #fff3e0;
+        color: #f57c00;
+    }
+    .status-badge.completed {
+        background: #e8f5e9;
+        color: #388e3c;
+    }
+</style>
+{% endblock %}
 
 {% block content %}
-<!-- Приветствие -->
-<div class="row mb-4">
-    <div class="col">
-        <h1 class="display-5 fw-bold">
-            <i class="fas fa-rocket text-primary me-3"></i>
-            Панель управления онбордингом
-        </h1>
-        <p class="text-muted">Отслеживайте прогресс новых сотрудников в реальном времени</p>
-    </div>
-    <div class="col-auto">
-        <a href="{% url 'admin:onboarding_onboardingtask_changelist' %}" class="btn btn-primary btn-lg">
-            <i class="fas fa-tasks me-2"></i>Управлять задачами
-        </a>
-    </div>
-</div>
-
-<!-- Статистика -->
-<div class="row g-4 mb-5">
-    <div class="col-md-3">
-        <div class="card bg-primary text-white h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-uppercase mb-2">Всего сотрудников</h6>
-                        <h2 class="display-4 fw-bold">{{ total_employees }}</h2>
-                    </div>
-                    <i class="fas fa-users fa-3x opacity-50"></i>
-                </div>
-            </div>
+<!-- Заголовок -->
+<div class="onboarding-header">
+    <div class="d-flex justify-content-between align-items-center">
+        <div>
+            <h1 class="display-5 fw-bold mb-2">
+                <i class="fas fa-rocket me-3"></i>Онбординг сотрудников
+            </h1>
+            <p class="mb-0 opacity-75">Отслеживайте прогресс адаптации новых сотрудников</p>
         </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card bg-success text-white h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-uppercase mb-2">Новые (30 дней)</h6>
-                        <h2 class="display-4 fw-bold">{{ new_employees }}</h2>
-                    </div>
-                    <i class="fas fa-user-plus fa-3x opacity-50"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card bg-warning text-white h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-uppercase mb-2">В процессе</h6>
-                        <h2 class="display-4 fw-bold">{{ in_progress }}</h2>
-                    </div>
-                    <i class="fas fa-spinner fa-3x opacity-50"></i>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-md-3">
-        <div class="card bg-info text-white h-100">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center">
-                    <div>
-                        <h6 class="text-uppercase mb-2">Завершили</h6>
-                        <h2 class="display-4 fw-bold">{{ completed_onboarding }}</h2>
-                    </div>
-                    <i class="fas fa-check-circle fa-3x opacity-50"></i>
-                </div>
-            </div>
+        <div>
+            <span class="badge bg-white text-dark px-4 py-2 rounded-pill">
+                <i class="fas fa-users me-2"></i>{{ employees|length }} сотрудников
+            </span>
         </div>
     </div>
 </div>
 
-<!-- График прогресса (круговая диаграмма) -->
-<div class="row mb-5">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header bg-white">
-                <h5 class="mb-0"><i class="fas fa-chart-pie me-2 text-primary"></i>Общий прогресс</h5>
-            </div>
+<!-- Статистика быстрая -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm">
             <div class="card-body">
-                <canvas id="progressChart" width="400" height="200"></canvas>
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary bg-opacity-10 rounded-circle p-3 me-3">
+                        <i class="fas fa-user-plus text-primary fa-2x"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">Всего в онбординге</h6>
+                        <h3 class="mb-0 fw-bold">{{ employees|length }}</h3>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-header bg-white">
-                <h5 class="mb-0"><i class="fas fa-tasks me-2 text-primary"></i>Быстрые действия</h5>
-            </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm">
             <div class="card-body">
-                <div class="d-grid gap-3">
-                    <a href="#" class="btn btn-outline-primary btn-lg text-start">
-                        <i class="fas fa-calendar-plus me-3"></i>
-                        Создать заявку на отпуск
-                    </a>
-                    <a href="#" class="btn btn-outline-success btn-lg text-start">
-                        <i class="fas fa-user-plus me-3"></i>
-                        Добавить нового сотрудника
-                    </a>
-                    <a href="{% url 'admin:onboarding_onboardingtask_changelist' %}" class="btn btn-outline-info btn-lg text-start">
-                        <i class="fas fa-list-check me-3"></i>
-                        Настроить чек-лист онбординга
-                    </a>
+                <div class="d-flex align-items-center">
+                    <div class="bg-success bg-opacity-10 rounded-circle p-3 me-3">
+                        <i class="fas fa-check-circle text-success fa-2x"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">Завершили</h6>
+                        <h3 class="mb-0 fw-bold">{{ completed_count|default:0 }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="bg-warning bg-opacity-10 rounded-circle p-3 me-3">
+                        <i class="fas fa-spinner text-warning fa-2x"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">В процессе</h6>
+                        <h3 class="mb-0 fw-bold">{{ in_progress_count|default:0 }}</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card border-0 shadow-sm">
+            <div class="card-body">
+                <div class="d-flex align-items-center">
+                    <div class="bg-info bg-opacity-10 rounded-circle p-3 me-3">
+                        <i class="fas fa-clock text-info fa-2x"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">Не начали</h6>
+                        <h3 class="mb-0 fw-bold">{{ not_started_count|default:0 }}</h3>
+                    </div>
                 </div>
             </div>
         </div>
@@ -114,119 +147,82 @@
 </div>
 
 <!-- Список сотрудников -->
-<div class="row mb-4">
-    <div class="col">
-        <h3><i class="fas fa-users me-2"></i>Все сотрудники</h3>
-    </div>
-</div>
-
 <div class="row">
     {% if employees %}
         {% for item in employees %}
             <div class="col-md-6 col-lg-4 mb-4">
-                <div class="card h-100 shadow-sm">
+                <div class="employee-card card">
                     <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-start mb-3">
-                            <div>
-                                <h5 class="card-title mb-1">{{ item.employee.name }}</h5>
-                                <p class="text-muted small mb-0">
-                                    <i class="fas fa-briefcase me-1"></i>{{ item.employee.position|default:"Должность не указана" }}
-                                </p>
+                        <div class="d-flex align-items-start mb-3">
+                            <div class="flex-shrink-0 me-3">
+                                <div class="bg-light rounded-circle p-3">
+                                    <i class="fas fa-user-circle fa-2x text-primary"></i>
+                                </div>
+                            </div>
+                            <div class="flex-grow-1">
+                                <h5 class="mb-1">{{ item.employee.name }}</h5>
+                                <p class="text-muted small mb-2">{{ item.employee.position|default:"Должность не указана" }}</p>
                                 {% if item.employee.hire_date %}
-                                <p class="text-muted small">
-                                    <i class="fas fa-calendar-alt me-1"></i>Принят: {{ item.employee.hire_date|date:"d.m.Y" }}
-                                </p>
+                                    <span class="badge bg-light text-dark">
+                                        <i class="far fa-calendar-alt me-1"></i>{{ item.employee.hire_date|date:"d.m.Y" }}
+                                    </span>
                                 {% endif %}
                             </div>
-                            <span class="badge bg-{% if item.progress == 100 %}success{% elif item.progress > 0 %}warning{% else %}secondary{% endif %} rounded-pill">
-                                {{ item.progress }}%
-                            </span>
-                        </div>
-                        
-                        <div class="progress mb-3" style="height: 8px;">
-                            <div class="progress-bar bg-{% if item.progress == 100 %}success{% elif item.progress > 50 %}info{% elif item.progress > 0 %}warning{% else %}secondary{% endif %}" 
-                                 role="progressbar" 
-                                 style="width: {{ item.progress }}%;" 
-                                 aria-valuenow="{{ item.progress }}" 
-                                 aria-valuemin="0" 
-                                 aria-valuemax="100">
+                            <div class="progress-circle" style="background: conic-gradient(#2fc6f6 {{ item.progress }}%, #f0f0f0 0%);">
+                                <span>{{ item.progress }}%</span>
                             </div>
                         </div>
-                        
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <small class="text-muted">
-                                <i class="fas fa-check-circle text-success me-1"></i>
-                                {{ item.completed }}/{{ item.total }}
-                            </small>
-                            <small class="text-muted">
-                                <i class="fas fa-clock me-1"></i>
+
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between mb-1">
+                                <span class="small">Прогресс</span>
+                                <span class="small fw-bold">{{ item.completed }}/{{ item.total }}</span>
+                            </div>
+                            <div class="progress" style="height: 6px;">
+                                <div class="progress-bar bg-primary" role="progressbar"
+                                     style="width: {{ item.progress }}%;"
+                                     aria-valuenow="{{ item.progress }}"
+                                     aria-valuemin="0"
+                                     aria-valuemax="100">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span class="status-badge
+                                {% if item.progress == 100 %}completed
+                                {% elif item.progress > 0 %}in-progress
+                                {% else %}new{% endif %}">
                                 {% if item.progress == 100 %}
-                                    Завершено
+                                    <i class="fas fa-check-circle me-1"></i>Завершён
                                 {% elif item.progress > 0 %}
-                                    В процессе
+                                    <i class="fas fa-spinner me-1"></i>В процессе
                                 {% else %}
-                                    Не начато
+                                    <i class="fas fa-clock me-1"></i>Не начат
                                 {% endif %}
-                            </small>
+                            </span>
+                            <a href="{% url 'onboarding:employee_checklist' item.employee.id %}"
+                               class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-clipboard-list me-1"></i>Чек-лист
+                            </a>
                         </div>
-                        
-                        <a href="{% url 'onboarding:employee_checklist' item.employee.id %}" 
-                           class="btn btn-outline-primary w-100">
-                            <i class="fas fa-clipboard-list me-2"></i>Открыть чек-лист
-                        </a>
                     </div>
                 </div>
             </div>
         {% endfor %}
     {% else %}
-        <div class="col">
-            <div class="alert alert-info text-center py-5">
-                <i class="fas fa-users fa-4x mb-3 opacity-50"></i>
-                <h4>Нет сотрудников</h4>
-                <p class="mb-3">Добавьте сотрудников через админку или синхронизацию</p>
-                <a href="{% url 'admin:users_employee_changelist' %}" class="btn btn-primary">
-                    <i class="fas fa-plus-circle me-2"></i>Добавить сотрудника
-                </a>
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-users fa-4x text-muted mb-3"></i>
+                    <h4>Нет сотрудников в онбординге</h4>
+                    <p class="text-muted mb-4">Добавьте сотрудников через админку или синхронизацию</p>
+                    <a href="{% url 'admin:users_employee_changelist' %}" class="btn btn-primary">
+                        <i class="fas fa-plus-circle me-2"></i>Добавить сотрудника
+                    </a>
+                </div>
             </div>
         </div>
     {% endif %}
 </div>
-{% endblock %}
-
-{% block extra_js %}
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // График прогресса
-    const ctx = document.getElementById('progressChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Завершили онбординг', 'В процессе', 'Не начали'],
-            datasets: [{
-                data: [
-                    {{ completed_onboarding }},
-                    {{ in_progress }},
-                    {{ total_employees|add:"-completed_onboarding"|add:"-in_progress" }}
-                ],
-                backgroundColor: [
-                    '#28a745',
-                    '#ffc107',
-                    '#6c757d'
-                ],
-                borderWidth: 0
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                }
-            },
-            cutout: '70%'
-        }
-    });
-});
-</script>
 {% endblock %}
