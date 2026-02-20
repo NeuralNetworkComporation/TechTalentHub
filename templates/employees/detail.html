@@ -1,0 +1,63 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ employee.name }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'users:list' %}">Сотрудники</a></li>
+                <li class="breadcrumb-item active">{{ employee.name }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card shadow-sm">
+            <div class="card-body text-center">
+                <div class="bg-primary bg-opacity-10 rounded-circle mx-auto p-4 mb-3" style="width: 120px; height: 120px;">
+                    <i class="fas fa-user-circle fa-4x text-primary"></i>
+                </div>
+                <h3>{{ employee.name }}</h3>
+                <p class="text-muted">{{ employee.position|default:"Должность не указана" }}</p>
+                <hr>
+                <p class="text-start mb-2">
+                    <i class="fas fa-envelope me-2 text-muted"></i>{{ employee.email }}
+                </p>
+                {% if employee.hire_date %}
+                    <p class="text-start mb-2">
+                        <i class="fas fa-calendar-alt me-2 text-muted"></i>Принят: {{ employee.hire_date|date:"d.m.Y" }}
+                    </p>
+                {% endif %}
+                <p class="text-start mb-2">
+                    <i class="fas fa-id-card me-2 text-muted"></i>Bitrix ID: {{ employee.bitrix_id }}
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-tasks me-2 text-primary"></i>Прогресс онбординга</h5>
+            </div>
+            <div class="card-body">
+                <p>Скоро здесь будет прогресс сотрудника</p>
+            </div>
+        </div>
+        
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0"><i class="fas fa-umbrella-beach me-2 text-success"></i>Отпуска</h5>
+            </div>
+            <div class="card-body">
+                <p>Скоро здесь будут заявки на отпуск</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
