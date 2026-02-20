@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Отчёт по длительности согласования{% endblock %}
+
+{% block extra_css %}
+<style>
+    .report-card {
+        background: white;
+        border-radius: 16px;
+        padding: 20px;
+        box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+        border: 1px solid #f0f0f0;
+        height: 100%;
+    }
+    .kpi-value {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: #2fc6f6;
+        line-height: 1.2;
+    }
+    .kpi-label {
+        color: #6c757d;
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+    .filter-card {
+        background: #f8f9fc;
+        border-radius: 12px;
+        padding: 20px;
+        margin-bottom: 25px;
+    }
+    .table-report {
+        font-size: 0.9rem;
+    }
+    .badge-sla {
+        padding: 5px 10px;
+        border-radius: 20px;
+        font-size: 0.8rem;
+    }
+    .badge-sla.ok {
+        background: #d4edda;
+        color: #155724;
+    }
+    .badge-sla.overdue {
+        background: #f8d7da;
+        color: #721c24;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <h1><i class="fas fa-chart-line me-3 text-primary"></i>Отчёт по длительности согласования</h1>
+        <p class="text-muted">Анализ времени прохождения маршрутов согласования</p>
+    </div>
+    <div class="col-auto">
+        <a href="{% url 'vacations:export_csv' %}?{{ request.GET.urlencode }}" class="btn btn-success me-2">
+            <i class="fas fa-file-csv me-2"></i>CSV
+        </a>
+        <a href="{% url 'vacations:export_json' %}?{{ request.GET.urlencode }}" class="btn btn-primary">
+            <i class="fas fa-file-code me-2"></i>JSON
+        </a>
+    </div>
+</div>
+
+<!-- Фильтры -->
+<div class="filter-card">
+    <form method="get" class="row g-3">
+        <div class="col-md-3">
+            <label class="form-label">Период с</label>
+            <input type="date" name="period_start" class="form-control" value="{{ filters.period_start }}">
+        </div>
+        <div class="col-md-3">
+            <label class="form-label">Период по</label>
+            <input type="date" name="period_end" class="form-control" value="{{ filters.period_end }}">
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Тип заявления</label>
+            <select name="type" class="form-select">
+                <option value="">Все</option>
+                <option value="vacation" {% if filters.type == 'vacation' %}selected{% endif %}>Отпуск</option>
+                <option value="business_trip" {% if filters.type == 'business_trip' %}selected{% endif %}>Командировка</option>
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Статус</label>
+            <select name="status" class="form-select">
+                <option value="">Все</option>
+                <option value="approved" {% if filters.status == 'approved' %}selected{% endif %}>Утверждённые</option>
+                <option value="rejected" {% if filters.status == 'rejected' %}selected{% endif %}>Отклонённые</option>
+                <option value="in_approval" {% if filters.status == 'in_approval' %}selected{% endif %}>В процессе</option>
+            </select>
+        </div>
+        <div class="col-md-2 d-flex align-items-end">
+            <button type="submit" class="btn btn-primary w-100">
+                <i class="fas fa-filter me-2"></i>Применить
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- KPI Карточки -->
+<div class="row g-4 mb-4">
+    <div class="col-md-3">
+        <div class="report-card">
+            <div class="kpi-value">{{ avg_duration }}</div>
+            <div class="kpi-label">Среднее время (дней)</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="report-card">
+            <div class="kpi-value">{{ median_duration }}</div>
+            <div class="kpi-label">Медианное время (дней)</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="report-card">
+            <div class="kpi-value">{{ on_time_percent }}%</div>
+            <div class="kpi-label">Согласовано в срок</div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="report-card">
+            <div class="kpi-value">{{ approved_count }}</div>
+            <div class="kpi-label">Утверждённых заявок</div>
+        </div>
+    </div>
+</div>
+
+<!-- Детальная таблица -->
+<div class="row">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">Детализация по заявкам</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-hover table-report">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Тип</th>
+                                <th>Сотрудник</th>
+                                <th>Дата создания</th>
+                                <th>Дата утверждения</th>
+                                <th>Длительность (дней)</th>
+                                <th>SLA (дней)</th>
+                                <th>Статус SLA</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in durations %}
+                            <tr>
+                                <td>#{{ item.id }}</td>
+                                <td>{{ item.type }}</td>
+                                <td>{{ item.employee }}</td>
+                                <td>{{ item.created_at|date:"d.m.Y H:i" }}</td>
+                                <td>{{ item.approved_at|date:"d.m.Y H:i" }}</td>
+                                <td class="fw-bold">{{ item.duration_days }}</td>
+                                <td>{{ item.sla_days }}</td>
+                                <td>
+                                    {% if item.overdue %}
+                                        <span class="badge-sla overdue">Просрочено</span>
+                                    {% else %}
+                                        <span class="badge-sla ok">В срок</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="8" class="text-center py-4">
+                                    <i class="fas fa-chart-line fa-2x text-muted mb-2"></i>
+                                    <p class="text-muted">Нет данных для отображения</p>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

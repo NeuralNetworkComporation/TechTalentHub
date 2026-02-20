@@ -1,0 +1,189 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Заявка #{{ vacation.id }}{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'vacations:list' %}">Отпуска</a></li>
+                <li class="breadcrumb-item active">Заявка #{{ vacation.id }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <!-- Основная информация -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-info-circle me-2 text-primary"></i>
+                    Детали заявки
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Сотрудник</label>
+                        <div class="fw-bold">{{ vacation.employee.name }}</div>
+                        <div class="text-muted">{{ vacation.employee.position|default:"" }}</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Тип заявления</label>
+                        <div>
+                            {% if vacation.request_type == 'vacation' %}
+                                <span class="badge bg-info">Отпуск</span>
+                            {% else %}
+                                <span class="badge bg-warning">Командировка</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Дата начала</label>
+                        <div class="fw-bold">{{ vacation.start_date|date:"d.m.Y" }}</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Дата окончания</label>
+                        <div class="fw-bold">{{ vacation.end_date|date:"d.m.Y" }}</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Количество дней</label>
+                        <div class="fw-bold">{{ vacation.days_count }} дн.</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="text-muted small">Статус</label>
+                        <div>
+                            {% if vacation.status == 'approved' %}
+                                <span class="badge bg-success">Утверждён</span>
+                            {% elif vacation.status == 'rejected' %}
+                                <span class="badge bg-danger">Отклонён</span>
+                            {% elif vacation.status == 'submitted' %}
+                                <span class="badge bg-warning text-dark">Отправлено</span>
+                            {% elif vacation.status == 'in_approval' %}
+                                <span class="badge bg-warning text-dark">На согласовании</span>
+                            {% elif vacation.status == 'draft' %}
+                                <span class="badge bg-secondary">Черновик</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% if vacation.comment %}
+                    <div class="col-12 mb-3">
+                        <label class="text-muted small">Комментарий</label>
+                        <div class="p-3 bg-light rounded">{{ vacation.comment }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Маршрут согласования -->
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-route me-2 text-success"></i>
+                    Маршрут согласования
+                </h5>
+            </div>
+            <div class="card-body">
+                {% with routes=vacation.get_route %}
+                    {% if routes %}
+                        {% for route in routes %}
+                            <div class="d-flex mb-3">
+                                <div class="me-3">
+                                    {% if route.step_no < vacation.current_step %}
+                                        <span class="badge bg-success rounded-circle p-2">✓</span>
+                                    {% elif route.step_no == vacation.current_step %}
+                                        <span class="badge bg-warning rounded-circle p-2">⌛</span>
+                                    {% else %}
+                                        <span class="badge bg-light text-dark rounded-circle p-2">{{ route.step_no }}</span>
+                                    {% endif %}
+                                </div>
+                                <div class="flex-grow-1">
+                                    <div class="d-flex justify-content-between">
+                                        <strong>{{ route.get_role_display }}</strong>
+                                        <span class="text-muted">SLA: {{ route.sla_days }} дн.</span>
+                                    </div>
+                                    <div class="text-muted small">
+                                        {% if route.step_no < vacation.current_step %}
+                                            ✓ Пройдено
+                                        {% elif route.step_no == vacation.current_step %}
+                                            ⌛ Ожидает согласования
+                                        {% else %}
+                                            ⏳ В очереди
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted">Маршрут не настроен</p>
+                    {% endif %}
+                {% endwith %}
+            </div>
+        </div>
+
+        <!-- История -->
+        {% if vacation.step_history %}
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-history me-2 text-info"></i>
+                    История согласования
+                </h5>
+            </div>
+            <div class="card-body">
+                {% for step in vacation.step_history %}
+                    <div class="d-flex mb-3">
+                        <div class="me-3">
+                            <span class="badge bg-info rounded-circle p-2">{{ forloop.counter }}</span>
+                        </div>
+                        <div>
+                            <div class="fw-bold">Шаг {{ step.step }}</div>
+                            <div class="text-muted small">
+                                {{ step.ended_at|date:"d.m.Y H:i" }}
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Боковая панель с действиями -->
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h5 class="mb-0">
+                    <i class="fas fa-cog me-2 text-secondary"></i>
+                    Действия
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if user.is_authenticated %}
+                    <form method="post" action="{% url 'vacations:approve' vacation.id %}" class="mb-2">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-success w-100">
+                            <i class="fas fa-check me-2"></i>Утвердить
+                        </button>
+                    </form>
+                    <form method="post" action="{% url 'vacations:reject' vacation.id %}">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger w-100">
+                            <i class="fas fa-times me-2"></i>Отклонить
+                        </button>
+                    </form>
+                {% else %}
+                    <p class="text-muted text-center mb-0">
+                        <a href="/admin/login/">Войдите</a> для выполнения действий
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

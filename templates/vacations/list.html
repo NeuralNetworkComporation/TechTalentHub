@@ -15,6 +15,9 @@
         <a href="{% url 'vacations:calendar' %}" class="btn btn-outline-success">
             <i class="fas fa-calendar-alt me-2"></i>Календарь
         </a>
+        <a href="{% url 'vacations:report_duration' %}" class="btn btn-outline-primary">
+            <i class="fas fa-chart-line me-2"></i>Отчёт
+        </a>
     </div>
 </div>
 
@@ -25,10 +28,13 @@
                 <table class="table table-hover align-middle">
                     <thead class="table-light">
                         <tr>
+                            <th>ID</th>
                             <th>Сотрудник</th>
+                            <th>Тип</th>
                             <th>Период</th>
                             <th>Дней</th>
                             <th>Статус</th>
+                            <th>Текущий шаг</th>
                             <th>Дата создания</th>
                             <th></th>
                         </tr>
@@ -36,28 +42,45 @@
                     <tbody>
                         {% for vacation in vacations %}
                             <tr>
+                                <td>#{{ vacation.id }}</td>
                                 <td>
                                     <strong>{{ vacation.employee.name }}</strong><br>
                                     <small class="text-muted">{{ vacation.employee.position|default:"" }}</small>
                                 </td>
                                 <td>
+                                    {% if vacation.request_type == 'vacation' %}
+                                        <span class="badge bg-info">Отпуск</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Командировка</span>
+                                    {% endif %}
+                                </td>
+                                <td>
                                     {{ vacation.start_date|date:"d.m.Y" }} - {{ vacation.end_date|date:"d.m.Y" }}
                                 </td>
                                 <td>
-                                    <span class="badge bg-info">{{ vacation.days_count }} дн.</span>
+                                    <span class="badge bg-secondary">{{ vacation.days_count }} дн.</span>
                                 </td>
                                 <td>
                                     {% if vacation.status == 'approved' %}
                                         <span class="badge bg-success">Утверждён</span>
-                                    {% elif vacation.status == 'pending' %}
-                                        <span class="badge bg-warning text-dark">На согласовании</span>
                                     {% elif vacation.status == 'rejected' %}
                                         <span class="badge bg-danger">Отклонён</span>
+                                    {% elif vacation.status == 'submitted' or vacation.status == 'in_approval' %}
+                                        <span class="badge bg-warning text-dark">На согласовании</span>
+                                    {% elif vacation.status == 'draft' %}
+                                        <span class="badge bg-secondary">Черновик</span>
                                     {% else %}
                                         <span class="badge bg-secondary">{{ vacation.status }}</span>
                                     {% endif %}
                                 </td>
-                                <td>{{ vacation.created_at|date:"d.m.Y" }}</td>
+                                <td>
+                                    {% if vacation.current_step > 0 %}
+                                        Шаг {{ vacation.current_step }}/{{ vacation.get_route|length }}
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+                                <td>{{ vacation.created_at|date:"d.m.Y H:i" }}</td>
                                 <td>
                                     <a href="{% url 'vacations:detail' vacation.id %}" class="btn btn-sm btn-outline-primary">
                                         <i class="fas fa-eye"></i>
@@ -71,8 +94,8 @@
         {% else %}
             <div class="alert alert-info text-center py-5">
                 <i class="fas fa-umbrella-beach fa-4x mb-3 opacity-50"></i>
-                <h4>Нет заявок на отпуск</h4>
-                <p>Создайте первую заявку</p>
+                <h4>Нет заявок</h4>
+                <p class="mb-3">Создайте первую заявку на отпуск или командировку</p>
                 <a href="{% url 'vacations:create' %}" class="btn btn-success">
                     <i class="fas fa-plus-circle me-2"></i>Создать заявку
                 </a>

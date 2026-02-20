@@ -11,4 +11,9 @@ urlpatterns = [
     path('<int:pk>/approve/', views.vacation_approve, name='approve'),
     path('<int:pk>/reject/', views.vacation_reject, name='reject'),
     path('api/calendar/', views.calendar_api, name='calendar_api'),
+    path('report/', views.report_duration, name='report_duration'),
+    path('export/csv/', views.export_csv, name='export_csv'),
+    path('export/json/', views.export_json, name='export_json'),
+    path('<int:pk>/approve/', views.vacation_approve, name='approve'),
+    path('<int:pk>/reject/', views.vacation_reject, name='reject'),
 ]
