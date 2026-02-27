@@ -12,6 +12,14 @@ class Employee(TimeStampedModel):
     position = models.CharField(max_length=255, blank=True, verbose_name="Должность")
     hire_date = models.DateField(null=True, blank=True, verbose_name="Дата приема")
     is_active = models.BooleanField(default=True, verbose_name="Активен")
+    manager = models.ForeignKey(
+        'self',
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        verbose_name="Руководитель",
+        related_name='subordinates'
+    )
 
     class Meta:
         verbose_name = "Сотрудник"

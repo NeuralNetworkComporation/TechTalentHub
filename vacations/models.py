@@ -111,7 +111,6 @@ class VacationRequest(TimeStampedModel):
         if not user.is_authenticated:
             return False
 
-        from users.models import Employee
         try:
             employee = Employee.objects.get(user=user)
         except Employee.DoesNotExist:
@@ -121,16 +120,21 @@ class VacationRequest(TimeStampedModel):
         if not current_step_route:
             return False
 
-        # Проверка роли
-        if current_step_route.role == 'manager':
-            # Проверить, что пользователь - руководитель сотрудника
-            # Здесь нужна логика определения руководителя
-            return employee.position and 'руководитель' in employee.position.lower()
-        elif current_step_route.role == 'hr':
-            # Проверить, что пользователь - HR
-            return employee.position and ('hr' in employee.position.lower() or 'кадр' in employee.position.lower())
+        # HR может утверждать HR-шаг
+        if current_step_route.role == 'hr':
+            # Проверяем по должности или отделу
+            return employee.position and (
+                        'hr' in employee.position.lower() or 'кадр' in employee.position.lower() or 'human' in employee.position.lower())
+
+        # Руководитель может утверждать шаг руководителя для своих подчинённых
+        elif current_step_route.role == 'manager':
+            # Проверяем, является ли пользователь руководителем сотрудника
+            if self.employee.manager:
+                return employee.id == self.employee.manager.id
+            return False
+
+        # Сотрудник может утверждать только свои заявки на шаге employee
         elif current_step_route.role == 'employee':
-            # Только сам сотрудник
             return employee.id == self.employee.id
 
         return False
@@ -139,18 +143,26 @@ class VacationRequest(TimeStampedModel):
         """Перейти к следующему шагу маршрута"""
         from django.utils import timezone
 
-        # Записываем завершённый шаг в историю
+        # Записываем завершённый шаг в историю (ЕСЛИ ОН БЫЛ)
         if self.current_step > 0:
-            step_info = {
-                'step': self.current_step,
-                'started_at': self.step_started_at.isoformat() if self.step_started_at else None,
-                'ended_at': timezone.now().isoformat(),
-                'approved_by': self.approved_by.id if self.approved_by else None,
-            }
-            # Создаём новый список, если его нет
-            if not self.step_history:
-                self.step_history = []
-            self.step_history.append(step_info)
+            # Проверяем, не записан ли уже этот шаг
+            step_already_recorded = False
+            for step in self.step_history:
+                if step.get('step') == self.current_step:
+                    step_already_recorded = True
+                    break
+
+            if not step_already_recorded:
+                step_info = {
+                    'step': self.current_step,
+                    'started_at': self.step_started_at.isoformat() if self.step_started_at else None,
+                    'ended_at': timezone.now().isoformat(),
+                    'approved_by': self.approved_by.id if self.approved_by else None,
+                }
+                # Создаём новый список, если его нет
+                if not self.step_history:
+                    self.step_history = []
+                self.step_history.append(step_info)
 
         # Переходим к следующему шагу
         next_step = self.current_step + 1

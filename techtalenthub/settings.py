@@ -107,6 +107,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 BITRIX24_WEBHOOK = os.getenv('BITRIX24_WEBHOOK', '')
 
 # Куда перенаправлять неавторизованных пользователей
-LOGIN_URL = '/admin/login/'
+LOGIN_URL = '/login/'
 LOGIN_REDIRECT_URL = '/'
-LOGOUT_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/login/'

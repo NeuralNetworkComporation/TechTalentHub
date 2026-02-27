@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Выбор роли{% endblock %}
+
+{% block extra_css %}
+<style>
+    .role-card {
+        border-radius: 16px;
+        border: 1px solid #f0f0f0;
+        transition: all 0.3s;
+        cursor: pointer;
+        height: 100%;
+    }
+    .role-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        border-color: #2fc6f6;
+    }
+    .role-icon {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 15px;
+    }
+    .role-employee .role-icon { background: #e3f2fd; color: #1976d2; }
+    .role-manager .role-icon { background: #e8f5e9; color: #388e3c; }
+    .role-hr .role-icon { background: #fff3e0; color: #f57c00; }
+    .role-admin .role-icon { background: #fce4e4; color: #d32f2f; }
+    
+    .login-form {
+        max-width: 400px;
+        margin: 0 auto;
+        padding: 30px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 5px 30px rgba(0,0,0,0.05);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="text-center mb-5">
+            <h1 class="display-5 fw-bold">
+                <i class="fas fa-rocket text-primary me-3"></i>
+                TechTalentHub
+            </h1>
+            <p class="lead text-muted">Выберите роль для входа в систему</p>
+        </div>
+        
+        <!-- Сообщения об ошибках -->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+        
+        <!-- Форма ручного входа -->
+        <div class="login-form mb-5">
+            <h5 class="text-center mb-4">
+                <i class="fas fa-key me-2 text-primary"></i>
+                Войти по логину и паролю
+            </h5>
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label class="form-label">Имя пользователя</label>
+                    <input type="text" name="username" class="form-control" required autofocus>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Пароль</label>
+                    <input type="password" name="password" class="form-control" required>
+                </div>
+                <button type="submit" class="btn btn-primary w-100 py-2">
+                    <i class="fas fa-sign-in-alt me-2"></i>Войти
+                </button>
+            </form>
+        </div>
+        
+        <!-- Быстрый вход по ролям -->
+        <h5 class="text-center mb-4">
+            <i class="fas fa-users me-2 text-primary"></i>
+            Быстрый вход как:
+        </h5>
+        
+        <div class="row g-4">
+            {% for user in demo_users %}
+            <div class="col-md-3 col-6">
+                <div class="role-card role-{{ user.role|lower }} card text-center p-3" 
+                     onclick="quickLogin('{{ user.username }}', '{{ user.password }}')">
+                    <div class="role-icon">
+                        {% if user.role == 'Сотрудник' %}
+                            <i class="fas fa-user fa-2x"></i>
+                        {% elif user.role == 'Руководитель' %}
+                            <i class="fas fa-user-tie fa-2x"></i>
+                        {% elif user.role == 'HR-специалист' %}
+                            <i class="fas fa-handshake fa-2x"></i>
+                        {% else %}
+                            <i class="fas fa-crown fa-2x"></i>
+                        {% endif %}
+                    </div>
+                    <h6 class="mb-1">{{ user.name }}</h6>
+                    <small class="text-muted">{{ user.role }}</small>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- Скрытая форма для быстрого входа -->
+<form id="quickLoginForm" method="post" style="display: none;">
+    {% csrf_token %}
+    <input type="hidden" name="username" id="quickUsername">
+    <input type="hidden" name="password" id="quickPassword">
+</form>
+
+<script>
+function quickLogin(username, password) {
+    document.getElementById('quickUsername').value = username;
+    document.getElementById('quickPassword').value = password;
+    document.getElementById('quickLoginForm').submit();
+}
+</script>
+{% endblock %}
